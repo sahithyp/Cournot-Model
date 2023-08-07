@@ -1,21 +1,13 @@
 import random
 import numpy as np
 
-def grad_func(i, k, action, coefs):
-    total_firms, total_locations, a, b, r, c = coefs
-
-    aik = action[i * total_locations + k]
-    ai = sum(action[i * total_locations + k] for k in range(total_locations))            # output of firm i at all locations
-    ak = sum(action[i * total_locations + k] for i in range(total_firms))               # output at all n firms at location k
-
-    df = a[k] - (b[k] + r[k]) * (aik + ak) - 2 * c[i] * ai
-    return df
+from nFirms_mLocations import grad_func
 
 def grad_ascent(learning_rate, tolerance, max_iter, action, coefs):
     total_firms, total_locations, a, b, r, c = coefs
     max_error = np.infty
     indices = [(i, k) for i in range(total_firms) for k in range(total_locations)]
-
+    print(indices)
     iter = 0
     while max_error > tolerance and iter < max_iter:
         max_error = 0
@@ -36,11 +28,8 @@ def grad_ascent(learning_rate, tolerance, max_iter, action, coefs):
 
     return action, max_error
 
-
-
-
 total_firms = 4
-total_locations = 200
+total_locations = 5
 
 coefs = [total_firms, total_locations, [random.randint(2500,3500) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
 action = np.ones(total_firms * total_locations)

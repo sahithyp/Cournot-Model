@@ -30,8 +30,8 @@ def error(action, coefs):
     return e
 
 
-total_firms = 5             # firms
-total_locations = 5         # locations
+total_firms = 4             # firms
+total_locations = 25         # locations
 
 # coefs = [[a], [b], [r], [c]]
 # coefs = [total_firms, total_locations, [10,20], [2,1], [4,5], [1,2]]          # coefs for 2x2
