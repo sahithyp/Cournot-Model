@@ -10,7 +10,7 @@ class Game():
         self.location_params = []
         self.firm_grads = []
         self.actions = []
-        self.costs = []
+        # self.costs = []
 
     def add_location(self,params):
         self.number_locations += 1
@@ -19,7 +19,7 @@ class Game():
     def add_firm(self, grad_func, action):
         self.number_firms += 1
         self.firm_grads.append(grad_func[0])
-        self.costs.append(grad_func[-1])
+        # self.costs.append(grad_func[-1])
         self.actions.extend(action)
 
     def solve_grad_ascent(self, learning_rate, tolerance, max_iter):
@@ -45,7 +45,7 @@ class Game():
 
         return self.actions, max_error
 
-    def demand_plot(self):
+    def demand_plot(self,costs):
         for i in range(self.number_firms):
             ts_perc_ai_dict = {}
             prices = []
@@ -64,7 +64,7 @@ class Game():
             lists = sorted(ts_perc_ai_dict.items())
             x, y = zip(*lists)
             plt.scatter(x,y)
-            plt.plot(x, y, label="Firm %d, Cost: %f" % (i, self.costs[i]))      # add cost
+            plt.plot(x, y, label="Firm %d, Cost: %f" % (i, costs[i]))      # add cost
 
         plt.xlabel("TS")
         plt.ylabel("% ai")

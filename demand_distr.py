@@ -40,8 +40,8 @@ def grad_ascent(learning_rate, tolerance, max_iter, action, coefs):
     print("error: ", max_error)
     return action
 
-total_firms = 2
-total_locations = 50
+total_firms = 1
+total_locations = 25
 
 coefs = [total_firms, total_locations, [random.randint(150,650) for a in range(total_locations)],[random.uniform(1.0,5.0) for b in range(total_locations)],[random.uniform(0.5,2.0) for r in range(total_locations)],[random.uniform(0.001,0.05) for c in range(total_firms)]]
 # coefs = [total_firms, total_locations, [10,20], [2,1], [4,5], [1,2]]          # coefs for 2x2
@@ -68,9 +68,24 @@ def demand_plot_v1():
         # lists = sorted(ts_perc_ai_dict.items(), key=lambda kv: kv[1])       # sort by values
         lists = sorted(ts_perc_ai_dict.items())                             # sort by keys
         x,y = zip(*lists)
-        # print(ts_perc_ai_dict)
-        plt.scatter(x, y)
-        plt.plot(x, y, label="Firm %d, Cost: %f" % (i, coefs[-1][i]))
+        X = np.array(x)
+        Y = np.array(y)
+        # a,b = np.polyfit(X,Y,1)
+        # # print(ts_perc_ai_dict)
+        # plt.scatter(X, Y)
+        model1 = np.poly1d(np.polyfit(X,Y, 2))
+        model2 = np.poly1d(np.polyfit(X,Y, 5))
+        # model3 = np.poly1d(np.polyfit(X,Y, 10))
+
+        polyline = np.linspace(0, max(x))
+        plt.scatter(X, Y)
+
+        plt.plot(X, Y, label="original")
+        plt.plot(polyline, model1(polyline), label="degree = 2")
+        plt.plot(polyline, model2(polyline), label="degree = 5")
+        # plt.plot(polyline, model3(polyline), label="degree = 10")
+
+
 
     plt.xlabel("TS")
     plt.ylabel("% ai")
@@ -141,5 +156,5 @@ def demand_plot_sortb():
     plt.show()
 
 demand_plot_v1()
-demand_plot_sorta()
-demand_plot_sortb()
+# demand_plot_sorta()
+# demand_plot_sortb()
