@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import mplcursors
+from scipy.interpolate import interp1d
 import random
 
 # from grad_ascent import grad_ascent
@@ -39,16 +40,17 @@ def grad_ascent(learning_rate, tolerance, max_iter, action, coefs):
     print("error: ", max_error)
     return action
 
-total_firms = 4
-total_locations = 5
+total_firms = 2
+total_locations = 50
 
-# coefs = [total_firms, total_locations, [random.randint(150,650) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
-coefs = [4, 5, [257, 252, 331, 263, 256], [1, 2, 7, 5, 5], [10, 5, 7, 9, 7], [8, 3, 6, 5]]
+coefs = [total_firms, total_locations, [random.randint(150,650) for a in range(total_locations)],[random.uniform(1.0,5.0) for b in range(total_locations)],[random.uniform(0.5,2.0) for r in range(total_locations)],[random.uniform(0.001,0.05) for c in range(total_firms)]]
+# coefs = [total_firms, total_locations, [10,20], [2,1], [4,5], [1,2]]          # coefs for 2x2
 action = grad_ascent(learning_rate=0.01, tolerance=0.000001, max_iter=10000, action=np.ones(total_firms * total_locations), coefs=coefs)
+print(action)
 
-def demand_plot():
+def demand_plot_v1():
     for i in range(total_firms):
-        perc_ai_ts_dict = {}
+        ts_perc_ai_dict = {}
 
         start_index = i * total_locations
         end_index = start_index + total_locations
@@ -61,21 +63,83 @@ def demand_plot():
             surplus = (a[k]**2) / (2*b[k])
             perc_ai = firm_i[k] / ai
 
-            perc_ai_ts_dict[surplus] = perc_ai
+            ts_perc_ai_dict[surplus] = perc_ai
 
-        dict_keys = list(perc_ai_ts_dict.keys())
-        dict_keys.sort()
-        sorted_perc_ai_ts_dict = {i: perc_ai_ts_dict[i] for i in dict_keys}
-
-        lists = sorted(sorted_perc_ai_ts_dict.items())
+        # lists = sorted(ts_perc_ai_dict.items(), key=lambda kv: kv[1])       # sort by values
+        lists = sorted(ts_perc_ai_dict.items())                             # sort by keys
         x,y = zip(*lists)
-
+        # print(ts_perc_ai_dict)
         plt.scatter(x, y)
-        plt.plot(x, y, label="Firm %d" % i)
+        plt.plot(x, y, label="Firm %d, Cost: %f" % (i, coefs[-1][i]))
 
-    plt.xlabel("Total Surplus")
+    plt.xlabel("TS")
     plt.ylabel("% ai")
     plt.legend()
     plt.show()
 
-demand_plot()
+def demand_plot_sorta():
+    for i in range(total_firms):
+        a_ts_perc_ai_dict = {}
+
+        start_index = i * total_locations
+        end_index = start_index + total_locations
+
+        firm_i = action[start_index:end_index]  # firm i's output at all k locations
+        ai = sum(firm_i)
+
+        for k in range(total_locations):
+            firms,locations,a,b,r,c = coefs
+            # vals_lst = []
+            # surplus = (a[k]**2) / (2*b[k])
+            perc_ai = firm_i[k] / ai
+            # vals_lst.append(surplus)
+            # vals_lst.append(perc_ai)
+
+            a_ts_perc_ai_dict[a[k]] = perc_ai
+
+        # lists = sorted(ts_perc_ai_dict.items(), key=lambda kv: kv[1])       # sort by values
+        lists = sorted(a_ts_perc_ai_dict.items())                             # sort by keys
+        x,y = zip(*lists)
+        plt.scatter(x, y)
+        plt.plot(x, y, label="Firm %d, Cost: %f" % (i, coefs[-1][i]))
+
+    plt.xlabel("a[k]")
+    plt.ylabel("% ai")
+    plt.title("a[k] vs % ai")
+    plt.legend()
+    plt.show()
+
+def demand_plot_sortb():
+    for i in range(total_firms):
+        a_ts_perc_ai_dict = {}
+
+        start_index = i * total_locations
+        end_index = start_index + total_locations
+
+        firm_i = action[start_index:end_index]  # firm i's output at all k locations
+        ai = sum(firm_i)
+
+        for k in range(total_locations):
+            firms, locations, a, b, r, c = coefs
+            # vals_lst = []
+            # surplus = (a[k] ** 2) / (2 * b[k])
+            perc_ai = firm_i[k] / ai
+            # vals_lst.append(surplus)
+            # vals_lst.append(perc_ai)
+            a_ts_perc_ai_dict[b[k]] = perc_ai
+
+        # lists = sorted(ts_perc_ai_dict.items(), key=lambda kv: kv[1])       # sort by values
+        lists = sorted(a_ts_perc_ai_dict.items())  # sort by keys
+        x, y = zip(*lists)
+        plt.scatter(x, y)
+        plt.plot(x, y, label="Firm %d, Cost: %f" % (i, coefs[-1][i]))
+
+    plt.xlabel("b[k]")
+    plt.ylabel("% ai")
+    plt.title("b[k] vs % ai")
+    plt.legend()
+    plt.show()
+
+demand_plot_v1()
+demand_plot_sorta()
+demand_plot_sortb()

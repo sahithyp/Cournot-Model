@@ -1,6 +1,6 @@
 import random
-
 import cournot_game
+
 def one_firm_two_locations():
     game = cournot_game.Game()
 
@@ -53,15 +53,14 @@ def n_firms_m_locations(n,m):
             ak = sum(game.actions[i * game.number_locations + k] for i in range(game.number_firms))  # output at all n firms at location k
             df = a - (b + r) * (aik + ak) - 2 * c * ai
             return df
-        return grad
+        return [grad, c]
 
     game = cournot_game.Game()
-    locations = [(random.randint(50,150), random.randint(1,7), random.randint(5,10)) for k in range(m)]
-    costs = [(random.randint(1,10)) for i in range(n)]
+    locations = [(random.randint(50,650), random.uniform(1,5), random.uniform(.5,2)) for k in range(m)]
+    costs = [(random.uniform(.001,.05)) for i in range(n)]
 
     for location in locations:
         game.add_location(location)
-
     for c in costs:
         game.add_firm(grad_factory(c), [1] * game.number_locations)
 

@@ -30,16 +30,16 @@ def error(action, coefs):
     return e
 
 
-total_firms = 4             # firms
-total_locations = 25         # locations
+total_firms = 2             # firms
+total_locations = 2         # locations
 
 # coefs = [[a], [b], [r], [c]]
-# coefs = [total_firms, total_locations, [10,20], [2,1], [4,5], [1,2]]          # coefs for 2x2
+coefs = [total_firms, total_locations, [10,20], [2,1], [4,5], [1,2]]          # coefs for 2x2
 # coefs = [total_firms, total_locations, [10], [2], [4], [3, 4]]                   # coefs for 2x1
 # coefs = [total_firms, total_locations, [10,20], [2,1], [4,2], [3]]            # coefs for 1x2
 # coefs = [total_firms, total_locations, [60],[2], [4], [1]]                    # coefs for 1x1
 
-coefs = [total_firms, total_locations, [random.randint(50,150) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
+# coefs = [total_firms, total_locations, [random.randint(50,150) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
 
 initial = np.ones(total_firms * total_locations)
 
@@ -50,13 +50,14 @@ result = opt.minimize(error, initial, args=coefs)
 if result.success:
     final_error = error(result.x, coefs)
     values = list(result.x)
-    dict_of_vals = {}
-
-    for i in range(total_firms):
-        for k in range(total_locations):
-            dict_of_vals["firm %d, location %d" % (i+1, k+1)] = values[i * total_locations + k]
-
-    print(dict_of_vals)
+    print(values)
+    # dict_of_vals = {}
+    #
+    # for i in range(total_firms):
+    #     for k in range(total_locations):
+    #         dict_of_vals["firm %d, location %d" % (i+1, k+1)] = values[i * total_locations + k]
+    #
+    # print(dict_of_vals)
     print("\nerror: ", final_error)
 
 else:

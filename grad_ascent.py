@@ -28,10 +28,12 @@ def grad_ascent(learning_rate, tolerance, max_iter, action, coefs):
 
     return action, max_error
 
-total_firms = 4
-total_locations = 5
+total_firms = 1
+total_locations = 2
 
-coefs = [total_firms, total_locations, [random.randint(2500,3500) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
+# coefs = [total_firms, total_locations, [random.randint(2500,3500) for a in range(total_locations)],[random.randint(1,7) for b in range(total_locations)],[random.randint(5,10) for r in range(total_locations)],[random.randint(3,8) for c in range(total_firms)]]
+coefs = [total_firms, total_locations, [10,20], [2,1], [4,2], [3]]            # coefs for 1x2
+
 action = np.ones(total_firms * total_locations)
 
 learning_rate = 0.01
