@@ -23,13 +23,33 @@ def initialize_game(costs, n, m):
         game.add_firm(grad_factory(c), [1] * game.number_locations)
 
     return game
+
 def plot_avg_dist(iterations):
     costs = [0.001, 0.05]
+    tot_surp_perc_ai = {}
 
-    for iter in iterations:
+
+    for i in range(iterations):
         game = initialize_game(costs, len(costs), 5)
         game.solve_grad_ascent(0.01, 0.00000001, 100000)
 
+        surplus, perc_ai = game.demand_plot(costs)
+
+        for i in range(len(surplus)):
+            tot_surp_perc_ai[surplus[i]] = perc_ai[i]
+
+    lists = sorted(tot_surp_perc_ai.items())
+    x, y = zip(*lists)
+    plt.scatter(x,y)
+    plt.plot(x, y, label="Firm %d, Cost: %f" % (i, costs[i]))      # add cost
+
+    plt.xlabel("TS")
+    plt.ylabel("% ai")
+    plt.title("total surplus vs percent ai graph")
+    plt.legend()
+    plt.show()
+
+    return(tot_surp)
 
 
 
