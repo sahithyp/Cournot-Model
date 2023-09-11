@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import cournot_game
+import examples
 
 def initialize_game(costs, n, m):
     def grad_factory(c):
@@ -12,7 +13,7 @@ def initialize_game(costs, n, m):
             ak = sum(game.actions[i * game.number_locations + k] for i in range(game.number_firms))  # output at all n firms at location k
             df = a - (b + r) * (aik + ak) - 2 * c * ai
             return df
-        return [grad]
+        return grad
 
     game = cournot_game.Game()
     locations = [(random.randint(50,650), random.uniform(1,5), random.uniform(.5,2)) for k in range(m)]
@@ -25,23 +26,40 @@ def initialize_game(costs, n, m):
     return game
 
 def plot_avg_dist(iterations):
-    costs = [0.001, 0.05]
-    tot_surp_perc_ai = {}
+    costs = [0.0001]
+    total_distr = {}
 
+    for i in range(len(costs)):
+        total_distr[i] = []
 
     for i in range(iterations):
         game = initialize_game(costs, len(costs), 5)
         game.solve_grad_ascent(0.01, 0.00000001, 100000)
+        sing_distr = game.demand_plot(costs)
+        sing_dict = {}
+        for pair in sing_distr[0]:
+            sing_dict[pair[0]] = pair[1]
+        lists = sorted(sing_dict.items())
+        x, y = zip(*lists)
+        plt.scatter(x, y)
+        plt.plot(x, y, label="iter: %d" % i)
 
-        surplus, perc_ai = game.demand_plot(costs)
+        for c in range(len(costs)):
+            for firm in sing_distr:
+                if firm == c:
+                    total_distr[c].extend(sing_distr[firm])
 
-        for i in range(len(surplus)):
-            tot_surp_perc_ai[surplus[i]] = perc_ai[i]
+    for i in range(len(costs)):
+        tot_surp_perc_ai = {}
+        for firm_key in total_distr:
+            if firm_key == i:
+                for pair in total_distr[firm_key]:
+                    tot_surp_perc_ai[pair[0]] = pair[1]
 
-    lists = sorted(tot_surp_perc_ai.items())
-    x, y = zip(*lists)
-    plt.scatter(x,y)
-    plt.plot(x, y, label="Firm %d, Cost: %f" % (i, costs[i]))      # add cost
+        lists = sorted(tot_surp_perc_ai.items())
+        x,y = zip(*lists)
+        plt.scatter(x,y)
+        plt.plot(x,y,label="Firm %d, Cost: %f" % (i,costs[i]))
 
     plt.xlabel("TS")
     plt.ylabel("% ai")
@@ -49,7 +67,7 @@ def plot_avg_dist(iterations):
     plt.legend()
     plt.show()
 
-    return(tot_surp)
+    return total_distr
 
 
 

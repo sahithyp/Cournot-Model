@@ -18,7 +18,7 @@ class Game():
 
     def add_firm(self, grad_func, action):
         self.number_firms += 1
-        self.firm_grads.append(grad_func[0])
+        self.firm_grads.append(grad_func)
         # self.costs.append(grad_func[-1])
         self.actions.extend(action)
 

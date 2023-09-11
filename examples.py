@@ -34,7 +34,7 @@ def two_firms_two_locations():
 
     game = cournot_game.Game()
     locations = [(10, 2, 4), (20, 1, 5)]
-    costs = [1,2]
+    costs = [0.001, 0.5]
 
     for location in locations:
         game.add_location(location)
