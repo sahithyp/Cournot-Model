@@ -13,7 +13,7 @@ def main():
     # costs = [0.001, 0.05]
     # print(game.demand_plot(costs))
 
-    print(plot_avg_distribution.plot_avg_dist(3))
+    print(plot_avg_distribution.plot_avg_dist(100))
 
 
 if __name__ == '__main__':

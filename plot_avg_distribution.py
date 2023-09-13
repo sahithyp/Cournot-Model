@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import cournot_game
+from datetime import datetime
+from statistics import mean
 import examples
 
 def initialize_game(costs, n, m):
@@ -16,7 +18,7 @@ def initialize_game(costs, n, m):
         return grad
 
     game = cournot_game.Game()
-    locations = [(random.randint(50,650), random.uniform(1,5), random.uniform(.5,2)) for k in range(m)]
+    locations = [(random.randint(50,650), random.uniform(1,5), 1) for k in range(m)]
 
     for location in locations:
         game.add_location(location)
@@ -31,7 +33,7 @@ def plot_avg_dist(iterations):
     total_distr = {}
     max_surp = 0
     min_surp = np.infty
-    number_locations = 3
+    number_locations = 10
 
     for i in range(number_firms):
         total_distr[i] = []
@@ -57,7 +59,8 @@ def plot_avg_dist(iterations):
             if min_in_sing_distr < min_surp:
                 min_surp = min_in_sing_distr
 
-            total_distr[i].append({("iter %d" % iter): sing_distr[i]})
+            total_distr[i].extend(sing_distr[i])
+            # total_distr[i].append({("iter %d" % iter): sing_distr[i]})
 
         # for i in range(number_firms):
         #     for firm in sing_distr:
@@ -65,27 +68,29 @@ def plot_avg_dist(iterations):
         #             total_distr[i].extend(sing_distr[firm])
     print(total_distr)
 
+    tot_ai = {}
     for i in total_distr:
         surp_range = max_surp - min_surp
-        increment = surp_range / (number_locations * 2)
-        first = min_surp + increment
-        increments = [first]
-        for num in range(1,number_locations*2):
+        number_bins = int(number_locations / 2)
+        increment = surp_range / (number_bins)
+        increments = [min_surp]
+        tot_ai[min_surp] = []
+        print("max val", max_surp)
+        for num in range(1,number_bins+1):
             increments.append(increments[num-1] + increment)
+            tot_ai[increments[num]] = []
 
-        for increment in increments:
-            surp_near_increment = []
-            for iter in iterations:
-                surp_vals = iter
-                surp = min(iter, key=lambda x:abs(x-increment))
+        for p in increments:
+            for (surplus, ai) in total_distr[i]:
+                if surplus >= p and surplus < (p + increment):
+                    tot_ai[p].append(ai)
+        print("total perc ai", tot_ai)
+        tot_perc_ai = {}
+        for (surplus,lst_ai) in tot_ai.items():
+            if len(lst_ai) > 0:
+                tot_perc_ai[surplus] = mean(lst_ai)
 
-        tot_surp_perc_ai = {}
-        for firm_key in total_distr:
-            if firm_key == i:
-                for pair in total_distr[firm_key]:
-                    tot_surp_perc_ai[pair[0]] = pair[1]
-        # print("surp", tot_surp_perc_ai)
-        lists = sorted(tot_surp_perc_ai.items())
+        lists = sorted(tot_perc_ai.items())
         x,y = zip(*lists)
         plt.scatter(x,y)
         plt.plot(x,y,label="Firm %d, Cost: %f" % (i,costs[i]))
@@ -94,18 +99,8 @@ def plot_avg_dist(iterations):
     plt.ylabel("% ai")
     plt.title("total surplus vs percent ai graph")
     plt.legend()
+    time = datetime.now().strftime("%H:%M:%S")
+    plt.savefig(f"plots/avg_distribution_{time}")
     plt.show()
 
     # return total_distr
-
-
-'''
-from iter1: surp to perc_ai
-from iter2: surp to perc_ai
-from iter3: surp to perc_ai
-
-create increments: divide range(surp) by 2 x number locations
-iterate through each list:
-    get perc_ai value linked to surplus closest to each increment
-    add to new dictionary to plot final graph
-'''

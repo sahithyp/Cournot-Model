@@ -59,18 +59,18 @@ class Game():
                 a,b,r = self.location_params[k]
                 prices.append(a)
                 surplus = (a**2) / (2 * b)
-                perc_ai = firm_i[k] / ai
+                perc_ai = firm_i[k]
                 ts_perc_ai_dict[surplus] = perc_ai
 
             lists = sorted(ts_perc_ai_dict.items())
-            # x, y = zip(*lists)
-            total_distr[i] = lists
-        return total_distr
-        #     plt.scatter(x,y)
-        #     plt.plot(x, y, label="Firm %d, Cost: %f" % (i, costs[i]))      # add cost
-        #
-        # plt.xlabel("TS")
-        # plt.ylabel("% ai")
-        # plt.title("total surplus vs percent ai graph")
-        # plt.legend()
-        # plt.show()
+            x, y = zip(*lists)
+            # total_distr[i] = lists
+        # return total_distr
+            plt.scatter(x,y)
+            plt.plot(x, y, label="Firm %d, Cost: %f" % (i, costs[i]))      # add cost
+
+        plt.xlabel("TS")
+        plt.ylabel("% ai")
+        plt.title("total surplus vs percent ai graph")
+        plt.legend()
+        plt.show()
