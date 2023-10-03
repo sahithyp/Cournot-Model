@@ -33,7 +33,7 @@ def plot_avg_dist(iterations):
     total_distr = {}
     max_surp = 0
     min_surp = np.infty
-    number_locations = 10
+    number_locations = 300
 
     for i in range(number_firms):
         total_distr[i] = []
@@ -41,15 +41,7 @@ def plot_avg_dist(iterations):
     for iter in range(iterations):
         game = initialize_game(costs, len(costs), number_locations)
         game.solve_grad_ascent(0.01, 0.00000001, 100000)
-        sing_distr = game.demand_plot(costs)
-        # sing_dict = {}
-        # print(sing_distr)
-        # for pair in sing_distr[0]:
-        #     sing_dict[pair[0]] = pair[1]
-        # lists = sorted(sing_dict.items())
-        # x, y = zip(*lists)
-        # plt.scatter(x, y)
-        # plt.plot(x, y, label="iter: %d" % iter)
+        sing_distr = game.demand_distribution(costs)
 
         for i in range(number_firms):
             max_in_sing_distr = max(sing_distr[i])[0]
@@ -60,13 +52,6 @@ def plot_avg_dist(iterations):
                 min_surp = min_in_sing_distr
 
             total_distr[i].extend(sing_distr[i])
-            # total_distr[i].append({("iter %d" % iter): sing_distr[i]})
-
-        # for i in range(number_firms):
-        #     for firm in sing_distr:
-        #         if firm == i:
-        #             total_distr[i].extend(sing_distr[firm])
-    print(total_distr)
 
     tot_ai = {}
     for i in total_distr:
@@ -75,7 +60,7 @@ def plot_avg_dist(iterations):
         increment = surp_range / (number_bins)
         increments = [min_surp]
         tot_ai[min_surp] = []
-        print("max val", max_surp)
+
         for num in range(1,number_bins+1):
             increments.append(increments[num-1] + increment)
             tot_ai[increments[num]] = []
@@ -84,7 +69,7 @@ def plot_avg_dist(iterations):
             for (surplus, ai) in total_distr[i]:
                 if surplus >= p and surplus < (p + increment):
                     tot_ai[p].append(ai)
-        print("total perc ai", tot_ai)
+
         tot_perc_ai = {}
         for (surplus,lst_ai) in tot_ai.items():
             if len(lst_ai) > 0:
@@ -97,7 +82,7 @@ def plot_avg_dist(iterations):
 
     plt.xlabel("TS")
     plt.ylabel("% ai")
-    plt.title("total surplus vs percent ai graph")
+    plt.title("total surplus vs percent ai graph (%d locations, %d iterations)" % (number_locations, iterations))
     plt.legend()
     time = datetime.now().strftime("%H:%M:%S")
     plt.savefig(f"plots/avg_distribution_{time}")
